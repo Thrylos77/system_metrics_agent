@@ -1,6 +1,7 @@
-# Dépendances runtime uniquement : utilisées dans les images Docker de production.
 fastapi>=0.115.0
-uvicorn[standard]>=0.30.0
-psutil>=6.0.0
-requests>=2.32.0
+uvicorn[standard]>=0.32.0
+psutil>=6.1.0
+requests>=2.32.3
 python-dotenv>=1.0.1
+urllib3>=2.2.2
+certifi>=2024.8.30
