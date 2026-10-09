@@ -1,1 +1,32 @@
+# Git and local metadata
+.git
+.gitignore
+.github
+
+# Python environments / caches
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.mypy_cache
+.ruff_cache
+
+# Local configuration / secrets
 .env
+.env.*
+!.env.example
+
+# Test / analysis artifacts
+.coverage
+coverage.xml
+htmlcov
+.scannerwork
+trivy-*.sarif
+
+# IDE / OS files
+.vscode
+.idea
+*.iml
+.DS_Store
+Thumbs.db
