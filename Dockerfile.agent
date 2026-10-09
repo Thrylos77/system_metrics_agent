@@ -8,28 +8,32 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1
 
 WORKDIR /build
+COPY requirements-agent.txt .
 
-# 1. Mise à jour des paquets système pour corriger les vulnérabilités OS (Debian) dès le build
-RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
-
-COPY requirements.txt .
-
-# 2. Mise à jour des outils d'empaquetage de base
+# Seules les dépendances de l'agent sont installées (pas de FastAPI/uvicorn).
+# pip est retiré du venv à la fin : inutile à l'exécution, et il est scanné par Trivy.
 RUN python -m venv /opt/venv \
-    && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
-    && /opt/venv/bin/pip install --no-cache-dir -r requirements.txt
+    && /opt/venv/bin/pip install --upgrade pip \
+    && /opt/venv/bin/pip install -r requirements-agent.txt \
+    && /opt/venv/bin/pip uninstall -y pip
 
 FROM python:3.12-slim-bookworm AS runtime
+
+# Change à chaque période (voir workflow) pour invalider le cache de la couche apt
+# et récupérer les derniers correctifs de sécurité Debian.
+ARG CACHE_BUST=none
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH"
 
-# 3. Mise à jour de l'image de runtime et installation sécurisée de procps
-RUN apt-get update \
+# procps est requis : l'agent exécute la commande `uptime`.
+RUN echo "cache-bust=${CACHE_BUST}" \
+    && apt-get update \
     && apt-get upgrade -y \
     && apt-get install --no-install-recommends -y procps \
     && rm -rf /var/lib/apt/lists/* \
+    && python -m pip uninstall -y pip setuptools wheel \
     && groupadd --system app \
     && useradd --system --gid app --create-home --home-dir /home/app app
 
