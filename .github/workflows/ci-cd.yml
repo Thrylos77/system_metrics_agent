@@ -108,6 +108,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4.38.1
         with:
           sarif_file: trivy-api.sarif
+          category: trivy-api
 
       - name: Build agent image
         uses: docker/build-push-action@v7.4.0
@@ -149,6 +150,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4.38.1
         with:
           sarif_file: trivy-agent.sarif
+          category: trivy-agent
 
       - name: Login to Docker Hub
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
