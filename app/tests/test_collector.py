@@ -10,7 +10,10 @@ from app.collector import (
 
 
 @patch("app.collector.subprocess.run")
-def test_get_load_average_success(mock_run):
+def test_get_load_average_success(mock_run, monkeypatch):
+    # Ce test vérifie le parsing de la sortie Unix d'uptime, même si les tests
+    # sont lancés localement sous Windows.
+    monkeypatch.setattr("app.collector.platform.system", lambda: "Linux")
     mock_run.return_value = Mock(
         stdout=" 10:00:00 up 2 days, load average: 0.10, 0.20, 0.30\n"
     )
@@ -22,13 +25,16 @@ def test_get_load_average_success(mock_run):
         "load_5m": 0.20,
         "load_15m": 0.30,
     }
+    mock_run.assert_called_once()
 
 
 @patch("app.collector.subprocess.run")
-def test_get_load_average_command_error(mock_run):
+def test_get_load_average_command_error(mock_run, monkeypatch):
+    # Simule le comportement d'un système Unix où uptime devrait être exécuté.
+    monkeypatch.setattr("app.collector.platform.system", lambda: "Linux")
     mock_run.side_effect = FileNotFoundError("uptime absent")
 
-    with pytest.raises(MetricsCollectionError):
+    with pytest.raises(MetricsCollectionError, match="uptime"):
         get_load_average()
 
 

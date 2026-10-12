@@ -1,7 +1,23 @@
+# Environnements et secrets locaux
 .env
-__pycache__/
-.pytest_cache/
-*.pyc
+.env.*
+!.env.example
+!.env.sonar.example
 .venv/
 venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Tests et couverture
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+
+# Git et artefacts locaux
 .git/
+.DS_Store
