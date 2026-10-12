@@ -2,9 +2,9 @@ name: CI/CD - System Metrics Agent
 
 on:
   push:
-    branches: ["main"]
+    branches: ["feature/devops"]
   pull_request:
-    branches: ["main"]
+    branches: ["feature/devops"]
 
 permissions:
   contents: read
@@ -153,14 +153,14 @@ jobs:
           category: trivy-agent
 
       - name: Login to Docker Hub
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/devops'
         uses: docker/login-action@v4.6.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Push API image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/devops'
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |
@@ -170,7 +170,7 @@ jobs:
           docker push ${DOCKERHUB_USERNAME}/system-metrics-api:latest
 
       - name: Push agent image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/devops'
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         run: |

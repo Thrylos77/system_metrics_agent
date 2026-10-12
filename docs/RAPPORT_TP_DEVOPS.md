@@ -3,7 +3,7 @@
 **Sujet :** Conteneurisation et automatisation du déploiement de `system_metrics_agent`
 **Étudiant(s) :** `[DANSOU Koffi Junior]`
 **Dépôt GitHub :** `[https://github.com/Thrylos77/system_metrics_agent.git]`
-**Dépôts Docker Hub :** `[URL de l'image API]` · `[URL de l'image agent]`
+**Dépôts Docker Hub :** `[https://hub.docker.com/u/yunio5]` · `[https://hub.docker.com/u/yunio5]`
 **Date de validation :** `[10/10/2026]`
 
 > **À finaliser après les essais :** remplacer les champs entre crochets par les résultats réels. Ne pas déclarer une étape comme réussie avant d'avoir vérifié sa sortie. Les captures indiquées ci-dessous sont celles qui apportent une preuve utile ; le fork, les fichiers, les branches, les commits et les secrets peuvent être vérifiés directement sur GitHub, donc aucune capture n'est nécessaire pour ces éléments.
@@ -123,9 +123,9 @@ Le fichier `sonar-project.properties` configure la clé `system-metrics-agent`, 
 
 Le pipeline est configuré pour que le job `build-scan-push` dépende du succès du job `test`. Un Quality Gate non validé doit donc empêcher le passage à la construction et à la publication des images.
 
-**Serveur utilisé :** `[Serveur SonarQube local Docker]`**Projet SonarQube :** `[http://localhost:9000]`**Résultat du Quality Gate :** `[PASSED / FAILED — à renseigner après exécution]`.
+**Serveur utilisé :** `[Serveur SonarQube Cloud]`**Projet SonarQube :** `[]`**Résultat du Quality Gate :** `[PASSED]`.
 
-> **CAPTURE 5 — `docs/captures/04-sonarqube-quality-gate.png`** : tableau de bord du projet affichant le résultat de l'analyse et le Quality Gate. Masquer toute information sensible. La réussite du contrôle est aussi consultable dans les logs GitHub Actions.
+> **CAPTURE 5 —** : tableau de bord du projet affichant le résultat de l'analyse et le Quality Gate. 
 
 **Attention :** un SonarQube accessible seulement via `http://localhost:9000` sur le PC de développement n'est pas accessible depuis un runner GitHub hébergé. Pour le pipeline distant, l'URL définie par `SONAR_HOST_URL` doit être accessible depuis GitHub Actions. L'instance locale Compose est un bonus pour les analyses locales, sauf si elle est rendue accessible de façon sécurisée depuis le runner.
 
@@ -147,10 +147,12 @@ Les secrets doivent exister dans **Settings → Secrets and variables → Action
 - **Dépôt GitHub :** `[https://github.com/Thrylos77/system_metrics_agent.git]`
 - **Exécution verte du workflow :** `[URL de l'exécution réussie sur GitHub Actions]`
 - **Exécution rouge volontaire :** `[URL de l'exécution échouée sur GitHub Actions]`
-- **Image API sur Docker Hub :** `[URL de la page Docker Hub]`
-- **Image agent sur Docker Hub :** `[URL de la page Docker Hub]`
+- **Image API & Agent sur Docker Hub :** `[https://hub.docker.com/repositories/yunio5]`
 
-> **CAPTURE 5 À AJOUTER — `docs/captures/05-pipeline-verte.png`** : exécution GitHub Actions réussie montrant les jobs et les contrôles validés. Le lien direct de l'exécution doit également être renseigné ci-dessus.
+
+
+> **CAPTURE 6 —** : exécution GitHub Actions réussie montrant les jobs et les contrôles validés.
+> ![1791568896175](image/RAPPORT_TP_DEVOPS/1791568896175.png)
 
 ## 7. Démonstration volontairement rouge
 
@@ -158,7 +160,7 @@ La démonstration consiste à rendre temporairement fausse une assertion de test
 
 Après la capture, restaurer l'assertion, pousser la correction, puis fermer ou mettre à jour la Pull Request de démonstration afin de ne pas laisser une modification volontairement défectueuse en attente.
 
-> **CAPTURE 6 À AJOUTER — `docs/captures/06-pipeline-rouge.png`** : échec du job `test` et job `build-scan-push` bloqué ou ignoré. Cette preuve est demandée dans le TP.
+> **CAPTURE 7 —** : échec du job `test` et job `build-scan-push` bloqué ou ignoré.
 
 ## 8. Bonus mis en place
 
@@ -169,13 +171,11 @@ Après la capture, restaurer l'assertion, pousser la correction, puis fermer ou 
 | Trivy au format SARIF                        | Les rapports`trivy-api.sarif` et `trivy-agent.sarif` sont envoyés à GitHub Code Scanning quand ils sont générés.                                  |
 | Dependabot                                   | `.github/dependabot.yml` contrôle chaque semaine les dépendances `pip` et les actions GitHub.                                                        |
 
-> **CAPTURE 7 OPTIONNELLE — `docs/captures/07-github-security-sarif.png`** : onglet Security / Code scanning montrant les résultats Trivy importés. Ne prendre cette capture qu'après avoir activé/configuré la fonctionnalité et vérifié que le rapport est bien visible.
-
 ## 9. Bilan technique et difficultés
 
 Les choix principaux visent à limiter la taille des images, réduire les privilèges des processus, ne pas intégrer les secrets dans les images, attendre la disponibilité de l'API et bloquer la publication en cas d'échec des tests, du Quality Gate ou du scan de sécurité.
 
-**Difficultés rencontrées et solutions apportées :** `[à compléter avec les difficultés réellement rencontrées : build, réseau Compose, SonarQube, vulnérabilités Trivy, secrets ou permissions GitHub]`.
+**Difficultés rencontrées et solutions apportées :** `[ SonarQube local, vulnérabilités Trivy]`.
 
 **État final :**
 
@@ -203,5 +203,3 @@ Les choix principaux visent à limiter la taille des images, réduire les privil
 | Pipeline rouge volontaire             | **Oui**              | Livrable demandé pour montrer le blocage du job suivant.                                                                |
 | Tableau de bord SonarQube             | Recommandée               | Rend le résultat du Quality Gate facile à lire ; les logs CI restent consultables.                                     |
 | Résultats SARIF dans GitHub Security | Optionnelle                | Preuve visuelle du bonus Trivy/SARIF.                                                                                    |
-
-**Organisation conseillée des images :** créer `docs/captures/` dans le dépôt et y placer les fichiers `01-tailles-images.png`, `02-test-api-docker-run.png`, `03-compose-metrics.png`, `04-sonarqube-quality-gate.png`, `05-pipeline-verte.png`, `06-pipeline-rouge.png` et, si le bonus a été vérifié, `07-github-security-sarif.png`.
